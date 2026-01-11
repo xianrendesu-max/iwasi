@@ -1,0 +1,11 @@
+body{margin:0;background:#0f172a;color:white;font-family:system-ui}
+header{display:flex;gap:12px;align-items:center;padding:12px}
+.logo{font-size:22px;font-weight:bold}
+input{padding:10px;border-radius:12px;border:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,240px);gap:16px}
+.card{background:#1e293b;border-radius:16px;padding:10px;cursor:pointer;
+transition:.2s}
+.card:hover{transform:scale(1.05)}
+video{width:100%;max-height:70vh;border-radius:16px}
+.comment{background:#020617}
+.controls{display:flex;gap:12px;margin:10px 0}

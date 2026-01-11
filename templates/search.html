@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="grid">
 {% for v in results %}
-<a href="/watch?v={{ v.videoId }}">{{ v.title }}</a><br>
+<div class="card" onclick="location.href='/watch/{{v.videoId}}'">
+  <img src="https://i.ytimg.com/vi/{{v.videoId}}/hqdefault.jpg">
+  <h3>{{v.title}}</h3>
+</div>
 {% endfor %}
+</div>
 {% endblock %}

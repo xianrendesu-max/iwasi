@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>イワシtube</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{margin:0;font-family:system-ui;background:#f2f2f2}
+header{background:#fff;padding:12px;border-bottom:1px solid #ddd}
+.top{display:flex;align-items:center}
+.logo{font-size:24px}
+.title{flex:1;text-align:center;font-size:20px;font-weight:700}
+.search{display:flex;gap:8px;margin-top:8px}
+.search input{flex:1;padding:10px}
+.btn{background:#111;color:#fff;border:none;padding:10px}
+.container{padding:12px;max-width:1200px;margin:auto}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="logo">🐟</div>
+    <div class="title">イワシtube</div>
+  </div>
+  <form class="search" action="/">
+    <input name="q" value="{{ q|default('') }}" placeholder="検索">
+    <button class="btn">検索</button>
+    <button type="button" class="btn" onclick="location.href='/favorites'">★</button>
+  </form>
+</header>
+<div class="container">
+{% block content %}{% endblock %}
+</div>
+</body>
+</html>

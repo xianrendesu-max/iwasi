@@ -1,16 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>お気に入り</h2>
-<div id="f"></div>
+<div id="fav" class="grid"></div>
 <script>
-const f=document.getElementById("f")
-JSON.parse(localStorage.getItem("fav")||"[]")
-.forEach(v=>{
- const a=document.createElement("a")
- a.href="/watch?v="+v.id
- a.textContent=v.title
- f.appendChild(a)
- f.appendChild(document.createElement("br"))
-})
+const fav=JSON.parse(localStorage.getItem("fav")||"[]");
+const root=document.getElementById("fav");
+fav.forEach(v=>{
+root.innerHTML+=`
+<div class="card" onclick="location.href='/watch/${v}'">
+<img src="https://i.ytimg.com/vi/${v}/hqdefault.jpg">
+</div>`;
+});
 </script>
 {% endblock %}

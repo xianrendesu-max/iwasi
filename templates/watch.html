@@ -1,42 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
-<div>
-{% if mode == "stream" and stream_url %}
-<video controls autoplay width="100%">
-  <source src="{{ stream_url }}">
-</video>
-{% elif mode == "edu" and edu_url %}
-<iframe src="{{ edu_url }}" width="100%" height="360"></iframe>
-{% else %}
-<iframe src="https://www.youtube.com/embed/{{ video_id }}"
- width="100%" height="360"></iframe>
-{% endif %}
+<video id="video" controls></video>
 
-<div style="margin:10px 0">
-<a href="/watch?v={{ video_id }}&mode=stream">🎬 Stream</a> |
-<a href="/watch?v={{ video_id }}&mode=edu">🎓 EDU</a> |
-<a href="/watch?v={{ video_id }}&mode=embed">🔗 Embed</a>
+<div class="controls">
+<select id="quality">
+{% for s in streams %}
+<option value="{{s.url}}">{{s.label}}</option>
+{% endfor %}
+</select>
+
+<button onclick="addFav()">⭐ お気に入り</button>
 </div>
 
-<h2>{{ video.title }}</h2>
+<script src="/static/player.js"></script>
+<script>
+initPlayer("{{streams[0].url}}");
+saveHistory("{{video_id}}");
+</script>
 
-<button onclick="fav()">☆ お気に入り</button>
-
-<h3>コメント</h3>
+<h2>コメント</h2>
 {% for c in comments %}
-<div>
-<b>{{ c.author }}</b><br>
-{{ c.contentHtml | safe }}
+<div class="card comment">
+<b>{{c.author}}</b>
+<p>{{c.content}}</p>
 </div>
 {% endfor %}
-</div>
-
-<script>
-function fav(){
- const f=JSON.parse(localStorage.getItem("fav")||"[]")
- f.push({id:"{{ video_id }}",title:"{{ video.title }}"})
- localStorage.setItem("fav",JSON.stringify(f))
- alert("追加")
-}
-</script>
 {% endblock %}

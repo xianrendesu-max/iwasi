@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>お気に入り</h2>
+<div id="f"></div>
+<script>
+const f=document.getElementById("f")
+JSON.parse(localStorage.getItem("fav")||"[]")
+.forEach(v=>{
+ const a=document.createElement("a")
+ a.href="/watch?v="+v.id
+ a.textContent=v.title
+ f.appendChild(a)
+ f.appendChild(document.createElement("br"))
+})
+</script>
+{% endblock %}

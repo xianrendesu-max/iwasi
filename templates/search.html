@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+{% for v in results %}
+<a href="/watch?v={{ v.videoId }}">{{ v.title }}</a><br>
+{% endfor %}
+{% endblock %}

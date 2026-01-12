@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>イワシtube</title>
+<link rel="stylesheet" href="style.css">
+<script src="hls.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="logo">🐟</div>
+  <div class="title">イワシtube</div>
+</header>
+
+<video id="video" controls></video>
+
+<div class="quality">
+  <button onclick="play('edu')">EDU</button>
+  <button onclick="play('high')">HIGH</button>
+  <button onclick="play('ytdl')">YTDL</button>
+  <button onclick="play('short')">SHORT</button>
+</div>
+
+<h2>コメント</h2>
+<div id="comments" class="comments"></div>
+
+<script>
+const vid = new URLSearchParams(location.search).get("v");
+let streams = {};
+
+fetch(`/api/watch/${vid}`)
+  .then(r=>r.json())
+  .then(d=>{
+    streams = d.streams;
+    play("edu");
+
+    const box = document.getElementById("comments");
+    d.comments.forEach(c=>{
+      box.innerHTML += `
+        <div class="comment-card">
+          <b>${c.author}</b>
+          <p>${c.content}</p>
+        </div>
+      `;
+    });
+  });
+
+function play(type){
+  const v = document.getElementById("video");
+  const url = streams[type];
+  if(!url) return;
+
+  if(Hls.isSupported()){
+    const hls = new Hls();
+    hls.loadSource(url);
+    hls.attachMedia(v);
+  }else{
+    v.src = url;
+  }
+}
+</script>
+
+</body>
+</html>

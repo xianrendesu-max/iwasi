@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>イワシtube</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">🐟</div>
+  <div class="title">イワシtube</div>
+</header>
+
+<form class="search-bar" onsubmit="search();return false;">
+  <input id="q" placeholder="検索">
+</form>
+
+<a class="fav-btn" href="favorites.html">⭐ お気に入り</a>
+
+<div id="grid" class="grid"></div>
+
+<script>
+async function search(){
+  const q = document.getElementById("q").value;
+  const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+  const data = await res.json();
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  data.forEach(v=>{
+    grid.innerHTML += `
+      <a class="card" href="watch.html?v=${v.videoId}">
+        <img src="https://i.ytimg.com/vi/${v.videoId}/hqdefault.jpg">
+        <div class="card-title">${v.title}</div>
+      </a>
+    `;
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,39 +1,48 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-import requests, random
+
+from api import search_videos, get_comments, stream_sources
 
 app = FastAPI()
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
-EDU_STREAM_API_BASE_URL = "https://siawaseok.duckdns.org/api/stream/"
-EDU_VIDEO_API_BASE_URL = "https://siawaseok.duckdns.org/api/video2/"
-STREAM_YTDL_API_BASE_URL = "https://yudlp.vercel.app/stream/"
-SHORT_STREAM_API_BASE_URL = "https://yt-dl-kappa.vercel.app/short/"
+templates = Jinja2Templates(directory="templates")
 
-INVIDIOUS_SEARCH = "https://api-five-zeta-55.vercel.app/search"
-INVIDIOUS_COMMENTS = [
-    "https://invidious.lunivers.trade/",
-    "https://iv.melmac.space/",
-    "https://iv.duti.dev/",
-]
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-def pick(lst): return random.choice(lst)
+@app.get("/", response_class=HTMLResponse)
+def index(request: Request):
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request}
+    )
 
-@app.get("/api/search")
-def search(q: str):
-    r = requests.get(INVIDIOUS_SEARCH, params={"q": q, "type": "video"})
-    return r.json() if r.ok else []
+@app.get("/search", response_class=HTMLResponse)
+def search(request: Request, q: str):
+    videos = search_videos(q) or []
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "videos": videos,
+            "q": q
+        }
+    )
 
-@app.get("/api/watch/{vid}")
-def watch(vid: str):
-    comments_api = pick(INVIDIOUS_COMMENTS)
-    comments = requests.get(f"{comments_api}api/v1/comments/{vid}").json()
-    return {
-        "streams": {
-            "edu": EDU_STREAM_API_BASE_URL + vid,
-            "high": EDU_VIDEO_API_BASE_URL + vid,
-            "ytdl": STREAM_YTDL_API_BASE_URL + vid,
-            "short": SHORT_STREAM_API_BASE_URL + vid
-        },
-        "comments": comments.get("comments", [])
-    }
+@app.get("/watch/{video_id}", response_class=HTMLResponse)
+def watch(request: Request, video_id: str):
+    return templates.TemplateResponse(
+        "watch.html",
+        {
+            "request": request,
+            "video_id": video_id,
+            "streams": stream_sources(video_id)
+        }
+    )
+
+@app.get("/api/comments/{video_id}")
+def comments(video_id: str):
+    return JSONResponse(
+        get_comments(video_id) or {}
+    )

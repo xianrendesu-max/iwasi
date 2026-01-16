@@ -1,11 +1,111 @@
-body{margin:0;background:#0f172a;color:white;font-family:system-ui}
-header{display:flex;gap:12px;align-items:center;padding:12px}
-.logo{font-size:22px;font-weight:bold}
-input{padding:10px;border-radius:12px;border:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,240px);gap:16px}
-.card{background:#1e293b;border-radius:16px;padding:10px;cursor:pointer;
-transition:.2s}
-.card:hover{transform:scale(1.05)}
-video{width:100%;max-height:70vh;border-radius:16px}
-.comment{background:#020617}
-.controls{display:flex;gap:12px;margin:10px 0}
+:root{
+ --bg:#f6f8fc;
+ --card:#ffffff;
+ --accent:#4f8cff;
+ --text:#1f2937;
+}
+
+*{
+ box-sizing:border-box;
+}
+
+body{
+ margin:0;
+ background:var(--bg);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI";
+ color:var(--text);
+}
+
+.glass{
+ max-width:1000px;
+ margin:auto;
+ padding:16px;
+}
+
+header{
+ font-size:26px;
+ font-weight:700;
+ margin-bottom:14px;
+}
+
+.search-box input{
+ width:100%;
+ padding:14px;
+ border-radius:16px;
+ border:none;
+ font-size:16px;
+ box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.results{
+ display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+ gap:14px;
+ margin-top:16px;
+}
+
+.card{
+ background:var(--card);
+ border-radius:18px;
+ overflow:hidden;
+ box-shadow:0 8px 20px rgba(0,0,0,.06);
+ text-decoration:none;
+ color:inherit;
+ transform:translateY(10px);
+ opacity:0;
+ animation:pop .4s ease forwards;
+}
+
+.card:hover{
+ transform:scale(1.03);
+}
+
+.card img{
+ width:100%;
+ display:block;
+}
+
+.title{
+ padding:10px;
+ font-size:14px;
+ line-height:1.4;
+}
+
+video{
+ width:100%;
+ border-radius:18px;
+ background:black;
+ box-shadow:0 12px 28px rgba(0,0,0,.18);
+}
+
+.buttons{
+ display:flex;
+ gap:10px;
+ flex-wrap:wrap;
+ margin:12px 0;
+}
+
+.buttons button{
+ flex:1;
+ padding:12px;
+ border:none;
+ border-radius:14px;
+ background:var(--accent);
+ color:white;
+ font-size:14px;
+}
+
+.comment{
+ background:white;
+ border-radius:14px;
+ padding:10px;
+ margin-bottom:8px;
+ box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
+
+@keyframes pop{
+ to{
+   opacity:1;
+   transform:none;
+ }
+   }

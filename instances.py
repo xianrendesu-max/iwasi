@@ -1,6 +1,6 @@
-import requests
 import random
-from cache import cache
+import requests
+from .cache import cache
 
 INSTANCES = {
     "search": [
@@ -25,11 +25,16 @@ def try_instances(kind, path, params=None, timeout=4):
 
     for base in random.sample(INSTANCES[kind], len(INSTANCES[kind])):
         try:
-            r = requests.get(f"{base}{path}", params=params, timeout=timeout)
+            r = requests.get(
+                f"{base}{path}",
+                params=params,
+                timeout=timeout
+            )
             if r.status_code == 200:
                 data = r.json()
                 cache.set(key, data, ttl=60)
                 return data
-        except:
+        except Exception:
             continue
+
     return None

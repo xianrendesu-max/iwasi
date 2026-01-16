@@ -1,13 +1,18 @@
 import os
+import sys
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(BASE_DIR)
+
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from .api import search_videos, get_comments, stream_sources
-
-BASE_DIR = os.path.dirname(__file__)
+from iwashi_tube.api import search_videos, get_comments, stream_sources
 
 app = FastAPI()
 

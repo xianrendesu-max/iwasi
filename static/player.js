@@ -1,23 +1,40 @@
-function initPlayer(src){
- const v=document.getElementById("video");
- if(src.endsWith(".m3u8") && Hls.isSupported()){
-  const h=new Hls(); h.loadSource(src); h.attachMedia(v);
- }else v.src=src;
+let hls = null
+
+function play(url){
+  const video = document.getElementById("player")
+
+  if(hls){
+    hls.destroy()
+    hls = null
+  }
+
+  if(Hls.isSupported()){
+    hls = new Hls()
+    hls.loadSource(url)
+    hls.attachMedia(video)
+  }else{
+    video.src = url
+  }
 }
 
-document.getElementById("quality")?.addEventListener("change",e=>{
- initPlayer(e.target.value);
-});
+function loadComments(id){
+ fetch(`/api/comments/${id}`)
+ .then(r => r.json())
+ .then(d => {
+   const c = document.getElementById("comments")
+   c.innerHTML = ""
 
-function addFav(){
- const id=location.pathname.split("/").pop();
- let f=JSON.parse(localStorage.getItem("fav")||"[]");
- if(!f.includes(id)) f.push(id);
- localStorage.setItem("fav",JSON.stringify(f));
-}
+   if(!d.comments){
+     c.innerText = "コメントなし"
+     return
+   }
 
-function saveHistory(id){
- let h=JSON.parse(localStorage.getItem("hist")||"[]");
- h.unshift(id); h=[...new Set(h)].slice(0,50);
- localStorage.setItem("hist",JSON.stringify(h));
+   d.comments.forEach(x => {
+     c.innerHTML += `
+      <div class="comment">
+        <strong>${x.author}</strong><br>
+        ${x.content}
+      </div>`
+   })
+ })
 }

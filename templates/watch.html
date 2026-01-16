@@ -1,28 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-<video id="video" controls></video>
 
-<div class="controls">
-<select id="quality">
+<video id="player" controls></video>
+
+<div class="buttons">
 {% for s in streams %}
-<option value="{{s.url}}">{{s.label}}</option>
+<button onclick="play('{{ s }}')">再生</button>
 {% endfor %}
-</select>
-
-<button onclick="addFav()">⭐ お気に入り</button>
 </div>
+
+<h3>コメント</h3>
+<div id="comments">読み込み中...</div>
 
 <script src="/static/player.js"></script>
 <script>
-initPlayer("{{streams[0].url}}");
-saveHistory("{{video_id}}");
+loadComments("{{ video_id }}")
 </script>
 
-<h2>コメント</h2>
-{% for c in comments %}
-<div class="card comment">
-<b>{{c.author}}</b>
-<p>{{c.content}}</p>
-</div>
-{% endfor %}
 {% endblock %}

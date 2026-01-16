@@ -2,10 +2,6 @@ import random
 import time
 from iwashi_tube.cache import cache
 
-# =========================
-# Invidious / API インスタンス
-# =========================
-
 INSTANCES = {
     "playlist": [
         "https://invidious.lunivers.trade",
@@ -42,10 +38,6 @@ INSTANCES = {
 
 MAX_RETRY = 3
 
-
-# =========================
-# 共通トライ関数
-# =========================
 
 def try_instances(kind: str, func):
     instances = INSTANCES.get(kind, []).copy()

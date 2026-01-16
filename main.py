@@ -1,15 +1,25 @@
+import os
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from api import search_videos, get_comments, stream_sources
+from .api import search_videos, get_comments, stream_sources
+
+BASE_DIR = os.path.dirname(__file__)
 
 app = FastAPI()
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(
+    directory=os.path.join(BASE_DIR, "templates")
+)
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount(
+    "/static",
+    StaticFiles(directory=os.path.join(BASE_DIR, "static")),
+    name="static"
+)
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):

@@ -1,91 +1,69 @@
-import requests
 import random
 import time
-
-from iwashi_tube.instances import try_instances
+from iwashi_tube.cache import cache
 
 # =========================
-# 共通設定
+# Invidious / API インスタンス
 # =========================
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (iwashi-tube)"
+INSTANCES = {
+    "playlist": [
+        "https://invidious.lunivers.trade",
+        "https://invidious.ducks.party",
+        "https://super8.absturztau.be",
+        "https://invidious.nikkosphere.com",
+        "https://yt.omada.cafe",
+        "https://iv.melmac.space",
+        "https://iv.duti.dev",
+    ],
+    "search": [
+        "https://api-five-zeta-55.vercel.app",
+    ],
+    "channel": [
+        "https://invidious.lunivers.trade",
+        "https://invid-api.poketube.fun",
+        "https://invidious.ducks.party",
+        "https://super8.absturztau.be",
+        "https://invidious.nikkosphere.com",
+        "https://yt.omada.cafe",
+        "https://iv.melmac.space",
+        "https://iv.duti.dev",
+    ],
+    "comments": [
+        "https://invidious.lunivers.trade",
+        "https://invidious.ducks.party",
+        "https://super8.absturztau.be",
+        "https://invidious.nikkosphere.com",
+        "https://yt.omada.cafe",
+        "https://iv.duti.dev",
+        "https://iv.melmac.space",
+    ],
 }
 
-TIMEOUT = 5
+MAX_RETRY = 3
 
 
 # =========================
-# 検索
+# 共通トライ関数
 # =========================
 
-def search_videos(query: str):
-    """
-    Invidious 検索API
-    """
-    def task(instance):
-        url = f"{instance}/api/v1/search"
-        params = {
-            "q": query,
-            "type": "video",
-            "sort_by": "relevance"
-        }
-        r = requests.get(url, params=params, headers=HEADERS, timeout=TIMEOUT)
-        r.raise_for_status()
-        return r.json()
+def try_instances(kind: str, func):
+    instances = INSTANCES.get(kind, []).copy()
+    random.shuffle(instances)
 
-    return try_instances(task)
+    last_error = None
 
+    for instance in instances[:MAX_RETRY]:
+        dead_key = f"dead:{kind}:{instance}"
+        if cache.get(dead_key):
+            continue
 
-# =========================
-# コメント取得
-# =========================
+        try:
+            return func(instance)
+        except Exception as e:
+            last_error = e
+            cache.set(dead_key, True, ttl=90)
+            time.sleep(0.3)
 
-def get_comments(video_id: str):
-    """
-    Invidious コメントAPI
-    """
-    def task(instance):
-        url = f"{instance}/api/v1/comments/{video_id}"
-        r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-        r.raise_for_status()
-        return r.json()
-
-    return try_instances(task)
-
-
-# =========================
-# ストリーム取得
-# =========================
-
-def stream_sources(video_id: str):
-    """
-    再生ソース取得（adaptiveFormats 含む）
-    """
-    def task(instance):
-        url = f"{instance}/api/v1/videos/{video_id}"
-        r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-        r.raise_for_status()
-        data = r.json()
-
-        streams = []
-
-        # 通常フォーマット
-        for f in data.get("formatStreams", []):
-            streams.append({
-                "url": f.get("url"),
-                "quality": f.get("qualityLabel"),
-                "mime": f.get("mimeType")
-            })
-
-        # adaptive（音声/映像分離）
-        for f in data.get("adaptiveFormats", []):
-            streams.append({
-                "url": f.get("url"),
-                "quality": f.get("qualityLabel", "adaptive"),
-                "mime": f.get("mimeType")
-            })
-
-        return streams
-
-    return try_instances(task)
+    print(f"[{kind}] all instances failed:", last_error)
+    return None

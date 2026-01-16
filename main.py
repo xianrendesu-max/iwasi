@@ -3,16 +3,12 @@ from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from iwashi_tube.api import (
-    search_videos,
-    get_comments,
-    stream_sources,
-)
+from api import search_videos, get_comments, stream_sources
 
 app = FastAPI(title="イワシtube", version="1.0")
 
-app.mount("/static", StaticFiles(directory="iwashi_tube/static"), name="static")
-templates = Jinja2Templates(directory="iwashi_tube/templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/", response_class=HTMLResponse)

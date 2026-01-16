@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form action="/search" class="search-box">
+  <input
+    name="q"
+    value="{{ q or '' }}"
+    placeholder="動画を検索"
+  >
+</form>
+
+<div class="results">
+{% if videos %}
+{% for v in videos %}
+  <a class="card" href="/watch/{{ v.videoId }}">
+    <img src="https://i.ytimg.com/vi/{{ v.videoId }}/hqdefault.jpg">
+    <div class="title">{{ v.title }}</div>
+  </a>
+{% endfor %}
+{% endif %}
+</div>
+
+{% endblock %}

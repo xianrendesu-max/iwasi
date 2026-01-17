@@ -1,22 +1,16 @@
 import time
 
-class SimpleCache:
-    def __init__(self):
-        self.store = {}
+_store = {}
 
-    def get(self, key):
-        item = self.store.get(key)
-        if not item:
-            return None
-        value, expire = item
-        if expire and expire < time.time():
-            del self.store[key]
-            return None
-        return value
+def get(key):
+    item = _store.get(key)
+    if not item:
+        return None
+    value, exp = item
+    if exp < time.time():
+        del _store[key]
+        return None
+    return value
 
-    def set(self, key, value, ttl=60):
-        expire = time.time() + ttl if ttl else None
-        self.store[key] = (value, expire)
-
-
-cache = SimpleCache()
+def set(key, value, ttl=60):
+    _store[key] = (value, time.time() + ttl)

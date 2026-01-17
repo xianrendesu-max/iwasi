@@ -1,6 +1,7 @@
 import requests
-from iwashi_tube.instances import try_instances
+import instances
 
+# 外部ストリーム API
 EDU_STREAM_API_BASE_URL = "https://siawaseok.duckdns.org/api/stream/"
 EDU_VIDEO_API_BASE_URL  = "https://siawaseok.duckdns.org/api/video2/"
 STREAM_YTDL_API_BASE_URL = "https://yudlp.vercel.app/stream/"
@@ -21,7 +22,7 @@ def search_videos(query: str):
         r.raise_for_status()
         return r.json()
 
-    return try_instances("search", task)
+    return instances.try_instances("search", task)
 
 
 def get_comments(video_id: str):
@@ -34,18 +35,19 @@ def get_comments(video_id: str):
         r.raise_for_status()
         return r.json()
 
-    return try_instances("comments", task)
+    return instances.try_instances("comments", task)
 
 
 def stream_sources(video_id: str):
-    for base in [
+    # 優先順フォールバック
+    for base in (
         EDU_STREAM_API_BASE_URL,
         EDU_VIDEO_API_BASE_URL,
         STREAM_YTDL_API_BASE_URL,
         SHORT_STREAM_API_BASE_URL,
-    ]:
+    ):
         try:
-            r = requests.get(f"{base}{video_id}", timeout=TIMEOUT)
+            r = requests.get(base + video_id, timeout=TIMEOUT)
             if r.ok:
                 return r.json()
         except:

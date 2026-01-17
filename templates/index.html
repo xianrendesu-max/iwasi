@@ -1,23 +1,53 @@
-{% extends "base.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>イワシtube</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
 
-<form action="/search" class="search-box">
-  <input
-    name="q"
-    value="{{ q or '' }}"
-    placeholder="動画を検索"
-  >
-</form>
+<header class="glass">
+  <h1>🐟 イワシtube</h1>
+  <input id="q" placeholder="動画を検索">
+  <button onclick="search()">検索</button>
+</header>
 
-<div class="results">
-{% if videos %}
-{% for v in videos %}
-  <a class="card" href="/watch/{{ v.videoId }}">
-    <img src="https://i.ytimg.com/vi/{{ v.videoId }}/hqdefault.jpg">
-    <div class="title">{{ v.title }}</div>
-  </a>
-{% endfor %}
-{% endif %}
-</div>
+<div id="results"></div>
 
-{% endblock %}
+<script>
+function alertMsg(msg){
+  const a=document.createElement("div");
+  a.className="alert";
+  a.textContent=msg;
+  document.body.appendChild(a);
+  setTimeout(()=>a.remove(),3000);
+}
+
+async function search(){
+  const q=document.getElementById("q").value;
+  if(!q) return alertMsg("検索ワードを入力してね");
+  try{
+    const r=await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+    if(!r.ok) throw "";
+    const data=await r.json();
+    const box=document.getElementById("results");
+    box.innerHTML="";
+    data.forEach(v=>{
+      const c=document.createElement("div");
+      c.className="glass card";
+      c.innerHTML=`
+        <a href="/watch/${v.videoId}">
+          <img src="https://i.ytimg.com/vi/${v.videoId}/hqdefault.jpg">
+          <p>${v.title}</p>
+        </a>`;
+      box.appendChild(c);
+    });
+  }catch{
+    alertMsg("検索に失敗しました");
+  }
+}
+</script>
+
+</body>
+</html>

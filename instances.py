@@ -1,6 +1,6 @@
 import random
 import time
-from iwashi_tube.cache import cache
+import cache
 
 INSTANCES = {
     "playlist": [
@@ -40,22 +40,16 @@ MAX_RETRY = 3
 
 
 def try_instances(kind: str, func):
-    instances = INSTANCES.get(kind, []).copy()
-    random.shuffle(instances)
+    pool = INSTANCES.get(kind, []).copy()
+    random.shuffle(pool)
 
-    last_error = None
-
-    for instance in instances[:MAX_RETRY]:
-        dead_key = f"dead:{kind}:{instance}"
-        if cache.get(dead_key):
+    for instance in pool[:MAX_RETRY]:
+        key = f"dead:{kind}:{instance}"
+        if cache.get(key):
             continue
-
         try:
             return func(instance)
-        except Exception as e:
-            last_error = e
-            cache.set(dead_key, True, ttl=90)
+        except:
+            cache.set(key, True, ttl=90)
             time.sleep(0.3)
-
-    print(f"[{kind}] all instances failed:", last_error)
     return None
